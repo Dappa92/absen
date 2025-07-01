@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Absensi</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Form Absensi</h1>
+    <form id="absensiForm">
+      <input type="text" placeholder="Nama" id="nama" required />
+      <input type="text" placeholder="NIM" id="nim" required />
+      <input type="text" placeholder="Fakultas" id="fakultas" required />
+      <input type="text" placeholder="Jurusan" id="jurusan" required />
+      <input type="number" placeholder="Angkatan" id="angkatan" required />
+      <button type="submit">Submit</button>
+    </form>
+    <button id="downloadBtn" onclick="downloadExcel()">Download Data (Admin Only)</button>
+  </div>
+
+  <script>
+    let dataAbsensi = [];
+
+    document.getElementById('absensiForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nama = document.getElementById('nama').value;
+      const nim = document.getElementById('nim').value;
+      const fakultas = document.getElementById('fakultas').value;
+      const jurusan = document.getElementById('jurusan').value;
+      const angkatan = document.getElementById('angkatan').value;
+
+      dataAbsensi.push({ nama, nim, fakultas, jurusan, angkatan });
+      alert('Data berhasil disimpan!');
+      document.getElementById('absensiForm').reset();
+    });
+
+    function downloadExcel() {
+      const adminPassword = prompt('Masukkan password admin:');
+      if (adminPassword !== 'IMTEKKUJYA') {
+        alert('Password salah. Akses ditolak.');
+        return;
+      }
+
+      const header = ["No", "Nama", "NIM", "Fakultas", "Jurusan", "Angkatan"];
+      const rows = dataAbsensi.map((obj, index) => [
+        index + 1,
+        obj.nama,
+        obj.nim,
+        obj.fakultas,
+        obj.jurusan,
+        obj.angkatan
+      ]);
+
+      const csvContent = [header, ...rows]
+        .map(row => row.map(field => `"${field}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.setAttribute('href', URL.createObjectURL(blob));
+      link.setAttribute('download', 'Data_Absensi_Rapih.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e2e2e2, #c9d6ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    form input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</body>
+</html>
